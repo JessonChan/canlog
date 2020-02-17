@@ -25,7 +25,7 @@ func newFileWriter(fileName string) *fileWriter {
 	}
 	openTime := time.Now()
 	openDate := openTime.Format("2006-01-02")
-	endTime, _ := time.Parse("2006-01-02 13:04:05", openDate+" 23:59:59")
+	endTime, _ := time.Parse("2006-01-02 15:04:05", openDate+" 23:59:59")
 	fw := &fileWriter{fileName: fileName, file: file, openTime: openTime, openDate: openDate, endTime: endTime}
 	go fw.rotate()
 	return fw
