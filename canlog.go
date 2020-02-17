@@ -38,8 +38,8 @@ func canLine(level int, v ...interface{}) {
 	}
 }
 
-func CanOutput(callDepth int, str string) {
-	_ = logger.Output(callDepth, str)
+func CanOutput(callDepth int, level int, str string) {
+	_ = logger.Output(callDepth, logPrefix[level]+" "+str)
 }
 
 func CanDebug(v ...interface{}) {
