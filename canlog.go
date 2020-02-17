@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -22,6 +23,9 @@ var logLevel = 0
 var logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 func InitLogger(rw io.Writer, prefix string) {
+	if !strings.HasPrefix(prefix, " ") {
+		prefix = " " + prefix
+	}
 	logger = log.New(rw, prefix, log.LstdFlags|log.Lshortfile)
 }
 

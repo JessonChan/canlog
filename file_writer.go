@@ -38,7 +38,7 @@ func (fw *fileWriter) rotate() {
 		if err != nil {
 			// em???
 		}
-		nfw := newFileWriter(fw.fileName)
+		nfw := NewFileWriter(fw.fileName)
 		err = fw.file.Close()
 		if err != nil {
 			// em???
