@@ -15,6 +15,10 @@ type fileWriter struct {
 }
 
 func NewFileWriter(fileName string) io.Writer {
+	return newFileWriter(fileName)
+}
+
+func newFileWriter(fileName string) *fileWriter {
 	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		// em???
@@ -38,7 +42,7 @@ func (fw *fileWriter) rotate() {
 		if err != nil {
 			// em???
 		}
-		nfw := NewFileWriter(fw.fileName)
+		nfw := newFileWriter(fw.fileName)
 		err = fw.file.Close()
 		if err != nil {
 			// em???
