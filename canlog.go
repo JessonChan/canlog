@@ -22,17 +22,24 @@ var logPrefix = []string{"[     ]", "[Debug]", "[ Info]", "[ Warn]", "[Error]", 
 var logLevel = 0
 var logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
-func InitLogger(rw io.Writer, prefix string) {
+func SetWriter(rw io.Writer, prefix string) {
 	if !strings.HasSuffix(prefix, " ") {
 		prefix = prefix + " "
 	}
 	logger = log.New(rw, prefix, log.LstdFlags|log.Lshortfile)
+}
+func GetLogger() *log.Logger {
+	return logger
 }
 
 func canLine(level int, v ...interface{}) {
 	if level >= logLevel {
 		_ = logger.Output(3, logPrefix[level]+" "+fmt.Sprintln(v...))
 	}
+}
+
+func CanOutput(callDepth int, str string) {
+	_ = logger.Output(callDepth, str)
 }
 
 func CanDebug(v ...interface{}) {
