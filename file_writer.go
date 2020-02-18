@@ -25,7 +25,7 @@ func newFileWriter(fileName string) *fileWriter {
 	}
 	openTime := time.Now()
 	openDate := openTime.Format("2006-01-02")
-	endTime, _ := time.Parse("2006-01-02 15:04:05", openDate+" 23:59:59")
+	endTime, _ := time.ParseInLocation("2006-01-02 15:04:05", openDate+" 23:59:59", openTime.Location())
 	fw := &fileWriter{fileName: fileName, file: file, openTime: openTime, openDate: openDate, endTime: endTime}
 	go fw.rotate()
 	return fw
@@ -37,7 +37,6 @@ func (fw *fileWriter) Write(p []byte) (n int, err error) {
 
 func (fw *fileWriter) rotate() {
 	time.AfterFunc(fw.endTime.Sub(fw.openTime), func() {
-		time.Sleep(time.Second)
 		err := os.Rename(fw.fileName, fw.fileName+"-"+fw.openDate)
 		if err != nil {
 			// em???
