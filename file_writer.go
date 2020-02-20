@@ -37,6 +37,7 @@ func (fw *fileWriter) Write(p []byte) (n int, err error) {
 
 func (fw *fileWriter) rotate() {
 	time.AfterFunc(fw.endTime.Sub(fw.openTime), func() {
+		// todo 如果 fw.fileName+"-"+fw.openDate 已经存在
 		err := os.Rename(fw.fileName, fw.fileName+"-"+fw.openDate)
 		if err != nil {
 			// em???
@@ -50,6 +51,5 @@ func (fw *fileWriter) rotate() {
 		fw.openDate = nfw.openDate
 		fw.openTime = nfw.openTime
 		fw.endTime = nfw.endTime
-		fw.rotate()
 	})
 }
