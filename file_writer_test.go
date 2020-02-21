@@ -2,6 +2,8 @@ package canlog
 
 import (
 	"fmt"
+	"log"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -38,4 +40,20 @@ func Test_file(t *testing.T) {
 		fmt.Println("hello")
 	})
 	time.Sleep(15 * time.Second)
+}
+
+func Test_Write(t *testing.T) {
+	fileName := "/tmp/canlog.txt"
+	fw := newFileWriter(new(fileWriter), fileName)
+	l := log.New(fw, "TEST", log.Lshortfile|log.LstdFlags)
+	go func() {
+		for i := 0; ; i++ {
+			l.Println("test", i)
+			time.Sleep(time.Millisecond * time.Duration(rand.Int63n(500)))
+		}
+	}()
+	for i := 0; ; i++ {
+		time.Sleep(time.Second * 3)
+		rotateChan <- fmt.Sprintf("%d", i)
+	}
 }
