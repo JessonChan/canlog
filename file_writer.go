@@ -1,7 +1,6 @@
 package canlog
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -45,10 +44,7 @@ func newFileWriter(fw *fileWriter, fileName string) *fileWriter {
 
 func (fw *fileWriter) Write(p []byte) (n int, err error) {
 	fw.locker.Lock()
-	f, e := fw.file.Stat()
-	log.Println(f, e)
 	n, err = fw.file.Write(p)
-	fmt.Println(n, err)
 	fw.locker.Unlock()
 	return n, err
 }
