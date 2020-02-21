@@ -30,6 +30,7 @@ func SetWriter(rw io.Writer, prefix string) {
 	if !strings.HasSuffix(prefix, " ") {
 		prefix = prefix + " "
 	}
+	// todo 性能和格式
 	logger = log.New(rw, prefix, log.LstdFlags|log.Lshortfile)
 }
 func GetLogger() *log.Logger {
