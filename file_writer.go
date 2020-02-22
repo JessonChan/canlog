@@ -12,25 +12,26 @@ import (
 )
 
 type fileWriter struct {
-	locker   sync.RWMutex
-	fileName string
-	file     *os.File
-	openTime time.Time
-	openDate string
-	endTime  time.Time
+	locker      sync.RWMutex
+	fileName    string
+	file        *os.File
+	openTime    time.Time
+	openDate    string
+	endTime     time.Time
+	rotateChan  chan string
+	errorLogger *log.Logger
 }
 
 func NewFileWriter(fileName string) io.Writer {
-	return newFileWriter(new(fileWriter), fileName)
+	return initFileWriter(new(fileWriter), fileName)
 }
 
-var rotateChan = make(chan string, 1)
-var errLogger = log.New(os.Stderr, "file_writer", log.Llongfile|log.LstdFlags)
-
-func newFileWriter(fw *fileWriter, fileName string) *fileWriter {
+func initFileWriter(fw *fileWriter, fileName string) *fileWriter {
+	fw.errorLogger = log.New(os.Stderr, "file_writer", log.Llongfile|log.LstdFlags)
+	fw.rotateChan = make(chan string, 1)
 	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
-		errLogger.Println(err)
+		fw.errorLogger.Println(err)
 		// em???
 	}
 	openTime := time.Now()
@@ -54,24 +55,24 @@ func (fw *fileWriter) Write(p []byte) (n int, err error) {
 
 func (fw *fileWriter) watchRotate() {
 	time.AfterFunc(fw.endTime.Sub(fw.openTime), func() {
-		rotateChan <- fw.fileName
+		fw.rotateChan <- fw.fileName + "_" + fw.openDate
 	})
 	go func() {
-		fileName := <-rotateChan
+		fileName := <-fw.rotateChan
 		fw.locker.Lock()
 		var err error
 		err = fw.file.Close()
 		if err != nil {
 			// em???
-			errLogger.Println(err)
+			fw.errorLogger.Println(err)
 		}
 		// todo 如果 fw.fileName+"-"+fw.openDate 已经存在
-		err = os.Rename(fw.fileName, fw.fileName+"-"+fw.openDate+fileName)
+		err = os.Rename(fw.fileName, fileName)
 		if err != nil {
 			// em???
-			errLogger.Println(err)
+			fw.errorLogger.Println(err)
 		}
-		newFileWriter(fw, fw.fileName)
+		initFileWriter(fw, fw.fileName)
 		fw.locker.Unlock()
 	}()
 }

@@ -47,7 +47,7 @@ func Test_file(t *testing.T) {
 
 func Test_Write(t *testing.T) {
 	fileName := "/tmp/canlog.txt"
-	fw := newFileWriter(new(fileWriter), fileName)
+	fw := initFileWriter(new(fileWriter), fileName)
 	l := log.New(fw, "TEST", log.Lshortfile|log.LstdFlags)
 	go func() {
 		for i := 0; ; i++ {
@@ -56,7 +56,8 @@ func Test_Write(t *testing.T) {
 		}
 	}()
 	for i := 0; ; i++ {
-		time.Sleep(time.Second * 3)
-		rotateChan <- fmt.Sprintf("%d", i)
+		time.Sleep(time.Second * 2)
+		fmt.Println("signal", i)
+		fw.rotateChan <- fmt.Sprintf("%s-%d", fw.fileName, i)
 	}
 }
