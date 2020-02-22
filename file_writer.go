@@ -34,9 +34,16 @@ func initFileWriter(fw *fileWriter, fileName string) *fileWriter {
 		fw.errorLogger.Println(err)
 		// em???
 	}
-	openTime := time.Now()
+	var openTime time.Time
+	if fw.openTime.IsZero() {
+		openTime = time.Now()
+	} else {
+		// 文件按天rotate 需要加1天
+		openTime = fw.openTime.AddDate(0, 0, 1)
+	}
 	openDate := openTime.Format("2006-01-02")
 	endTime, _ := time.ParseInLocation("2006-01-02 15:04:05", openDate+" 23:59:59", openTime.Location())
+
 	fw.fileName = fileName
 	fw.openTime = openTime
 	fw.openDate = openDate
@@ -55,7 +62,7 @@ func (fw *fileWriter) Write(p []byte) (n int, err error) {
 
 func (fw *fileWriter) watchRotate() {
 	time.AfterFunc(fw.endTime.Sub(fw.openTime), func() {
-		fw.rotateChan <- fw.fileName + "_" + fw.openDate
+		fw.rotateChan <- fw.fileName + "-" + fw.openDate
 	})
 	go func() {
 		fileName := <-fw.rotateChan
