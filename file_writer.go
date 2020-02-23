@@ -15,7 +15,6 @@ type fileWriter struct {
 	locker      sync.RWMutex
 	fileName    string
 	file        *os.File
-	openTime    time.Time
 	openDate    string
 	endTime     time.Time
 	rotateChan  chan string
@@ -35,17 +34,16 @@ func initFileWriter(fw *fileWriter, fileName string) *fileWriter {
 		// em???
 	}
 	var openTime time.Time
-	if fw.openTime.IsZero() {
+	if fw.endTime.IsZero() {
 		openTime = time.Now()
 	} else {
 		// 文件按天rotate 需要加1天
-		openTime = fw.openTime.AddDate(0, 0, 1)
+		openTime = fw.endTime.AddDate(0, 0, 1)
 	}
 	openDate := openTime.Format("2006-01-02")
 	endTime, _ := time.ParseInLocation("2006-01-02 15:04:05", openDate+" 23:59:59", openTime.Location())
 
 	fw.fileName = fileName
-	fw.openTime = openTime
 	fw.openDate = openDate
 	fw.endTime = endTime
 	fw.file = file
@@ -61,7 +59,7 @@ func (fw *fileWriter) Write(p []byte) (n int, err error) {
 }
 
 func (fw *fileWriter) watchRotate() {
-	time.AfterFunc(fw.endTime.Sub(fw.openTime), func() {
+	time.AfterFunc(fw.endTime.Sub(time.Now()), func() {
 		fw.rotateChan <- fw.fileName + "-" + fw.openDate
 	})
 	go func() {
