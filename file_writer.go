@@ -4,6 +4,7 @@
 package canlog
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -71,7 +72,14 @@ func (fw *fileWriter) watchRotate() {
 			// em???
 			fw.errorLogger.Println(err)
 		}
-		// todo 如果 fw.fileName+"-"+fw.openDate 已经存在
+		for {
+			fileInfo, _ := os.Lstat(fileName)
+			if fileInfo != nil {
+				fileName = fmt.Sprintf("%s-%d", fileName, time.Now().UnixNano())
+			} else {
+				break
+			}
+		}
 		err = os.Rename(fw.fileName, fileName)
 		if err != nil {
 			// em???
