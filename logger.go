@@ -6,11 +6,20 @@ package canlog
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"strings"
 )
 
 type CanLogger struct {
 	*log.Logger
+}
+
+func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
+	if !strings.HasSuffix(prefix, " ") {
+		prefix = prefix + " "
+	}
+	return &CanLogger{log.New(rw, prefix, log.LstdFlags|log.Lshortfile)}
 }
 
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
