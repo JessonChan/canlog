@@ -9,11 +9,11 @@ import (
 	"log"
 )
 
-type canLogger struct {
+type CanLogger struct {
 	*log.Logger
 }
 
-func (cl *canLogger) canLine(level int, v ...interface{}) {
+func (cl *CanLogger) canLine(level int, v ...interface{}) {
 	if level >= logLevel {
 		_ = cl.Output(3, levelPrefix[level]+" "+fmt.Sprintln(v...))
 	}
@@ -22,31 +22,31 @@ func (cl *canLogger) canLine(level int, v ...interface{}) {
 // CanOutput writes the output for a logging line.
 // The str contains the text to print after prefix and level-prefix.
 // callDepth is used to recover the PC adn is provided for generality.
-func (cl *canLogger) CanOutput(callDepth int, level int, str string) {
+func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 	_ = cl.Output(callDepth, levelPrefix[level]+" "+str)
 }
 
 // CanDebug call CanOutput with LDebug
-func (cl *canLogger) CanDebug(v ...interface{}) {
+func (cl *CanLogger) CanDebug(v ...interface{}) {
 	cl.canLine(LDebug, v...)
 }
 
 // CanInfo call CanOutput with LInfo
-func (cl *canLogger) CanInfo(v ...interface{}) {
+func (cl *CanLogger) CanInfo(v ...interface{}) {
 	cl.canLine(LInfo, v...)
 }
 
 // CanWarn call CanOutput with LWarn
-func (cl *canLogger) CanWarn(v ...interface{}) {
+func (cl *CanLogger) CanWarn(v ...interface{}) {
 	cl.canLine(LWarn, v...)
 }
 
 // CanError call CanOutput with LError
-func (cl *canLogger) CanError(v ...interface{}) {
+func (cl *CanLogger) CanError(v ...interface{}) {
 	cl.canLine(LError, v...)
 }
 
 // CanFatal will panic
-func (cl *canLogger) CanFatal(v ...interface{}) {
+func (cl *CanLogger) CanFatal(v ...interface{}) {
 	panic(fmt.Sprint(v...))
 }
