@@ -51,6 +51,15 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 	if !ok {
 		file = "???"
 		line = 0
+	} else {
+		short := file
+		for i := len(file) - 1; i > 0; i-- {
+			if file[i] == '/' {
+				short = file[i+1:]
+				break
+			}
+		}
+		file = short
 	}
 	_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
 }
