@@ -8,8 +8,23 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"runtime"
 	"strings"
 )
+
+// These flags define what level message to write
+const (
+	LZero = iota
+	LDebug
+	LInfo
+	LWarn
+	LError
+	LFatal
+)
+
+var levelPrefix = []string{"[     ]", "[Debug]", "[ Info]", "[ Warn]", "[Error]", "[Fatal]"}
+
+var logLevel = 0
 
 type CanLogger struct {
 	*log.Logger
@@ -19,12 +34,12 @@ func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
 	if !strings.HasSuffix(prefix, " ") {
 		prefix = prefix + " "
 	}
-	return &CanLogger{log.New(rw, prefix, log.LstdFlags|log.Lshortfile)}
+	return &CanLogger{log.New(rw, prefix, log.LstdFlags)}
 }
 
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
 	if level >= logLevel {
-		_ = cl.Output(3, levelPrefix[level]+" "+fmt.Sprintln(v...))
+		cl.CanOutput(3, level, fmt.Sprintln(v...))
 	}
 }
 
@@ -32,7 +47,12 @@ func (cl *CanLogger) canLine(level int, v ...interface{}) {
 // The str contains the text to print after prefix and level-prefix.
 // callDepth is used to recover the PC adn is provided for generality.
 func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
-	_ = cl.Output(callDepth, levelPrefix[level]+" "+str)
+	_, file, line, ok := runtime.Caller(callDepth)
+	if !ok {
+		file = "???"
+		line = 0
+	}
+	_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
 }
 
 // CanDebug call CanOutput with LDebug
