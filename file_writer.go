@@ -29,7 +29,7 @@ func NewFileWriter(fileName string) io.Writer {
 func initFileWriter(fw *fileWriter, fileName string) *fileWriter {
 	fw.errorLogger = log.New(os.Stderr, "file_writer", log.Llongfile|log.LstdFlags)
 	fw.rotateChan = make(chan string, 1)
-	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fw.errorLogger.Println(err)
 		// em???
