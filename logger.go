@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 )
@@ -23,6 +24,19 @@ const (
 )
 
 var levelPrefix = []string{"[     ]", "[Debug]", "[ Info]", "[ Warn]", "[Error]", "[Fatal]"}
+var currentPath = func() string {
+	dir, err := os.Getwd()
+	if err == nil {
+		if len(dir) > 0 {
+			if dir[len(dir)-1] != '/' {
+				dir = dir + "/"
+			}
+			return dir
+		}
+	}
+	return ""
+}()
+var currentPathLen = len(currentPath)
 
 var logLevel = 0
 
@@ -58,12 +72,20 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 	} else {
 		short := file
 		cd := callDepth
-		for i := len(file) - 1; i > 0; i-- {
-			if file[i] == '/' {
-				cd--
-				if cd == 0 {
-					short = file[i+1:]
-					break
+		if len(currentPath) <= len(file) {
+			if file[currentPathLen-1] == '/' {
+				cd = -1
+				short = file[currentPathLen:]
+			}
+		}
+		if cd >= 0 {
+			for i := len(file) - 1; i > 0; i-- {
+				if file[i] == '/' {
+					cd--
+					if cd == 0 {
+						short = file[i+1:]
+						break
+					}
 				}
 			}
 		}
