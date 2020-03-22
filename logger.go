@@ -57,10 +57,14 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 		line = 0
 	} else {
 		short := file
+		cd := callDepth
 		for i := len(file) - 1; i > 0; i-- {
 			if file[i] == '/' {
-				short = file[i+1:]
-				break
+				cd--
+				if cd == 0 {
+					short = file[i+1:]
+					break
+				}
 			}
 		}
 		file = short
