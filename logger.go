@@ -30,11 +30,15 @@ type CanLogger struct {
 	*log.Logger
 }
 
-func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
-	if !strings.HasSuffix(prefix, " ") {
-		prefix = prefix + " "
+func formatPrefix(p string) string {
+	if !strings.HasSuffix(p, " ") {
+		p = p + " "
 	}
-	return &CanLogger{log.New(rw, prefix, log.LstdFlags)}
+	return p
+}
+
+func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
+	return &CanLogger{log.New(rw, formatPrefix(prefix), log.LstdFlags)}
 }
 
 func (cl *CanLogger) canLine(level int, v ...interface{}) {

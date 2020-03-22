@@ -16,7 +16,8 @@ var logger = NewCanLogger(os.Stdout, "")
 // SetWriter sets the destination on which log data will be written.
 // The prefix appears at the beginning of each line followed a space.
 func SetWriter(rw io.Writer, prefix string) {
-	logger = NewCanLogger(rw, prefix)
+	logger.SetOutput(rw)
+	logger.SetPrefix(formatPrefix(prefix))
 }
 
 // GetLogger returns the log.Logger
