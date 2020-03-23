@@ -11,8 +11,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-
-	"github.com/fatih/color"
 )
 
 // These flags define what level message to write
@@ -58,13 +56,22 @@ func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
 	return &CanLogger{isColor: false, Logger: log.New(rw, formatPrefix(prefix), log.LstdFlags)}
 }
 
-var colorBrush = []func(format string, a ...interface{}) string{color.RedString, color.GreenString, color.YellowString, color.BlueString, color.MagentaString, color.CyanString, color.WhiteString}
+var colorBrushes = func() (bs []func(string) string) {
+	for i := 31; i <= 37; i++ {
+		bs = append(bs, func(cn int) func(s string) string {
+			return func(s string) string {
+				return fmt.Sprintf("\033[0;%dm"+s+"\033[0m", cn)
+			}
+		}(i))
+	}
+	return
+}()
 
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
 	if cl.isColor {
 		cs := ""
 		for i := 0; i < len(v); i++ {
-			cs = cs + colorBrush[i%len(colorBrush)](fmt.Sprint(v[i]))
+			cs = cs + colorBrushes[i%len(colorBrushes)](fmt.Sprint(v[i])) + " "
 		}
 		v = []interface{}{cs}
 	}
@@ -104,7 +111,7 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 		file = short
 	}
 	if cl.isColor {
-		_ = cl.Output(callDepth, color.GreenString(levelPrefix[level])+" "+color.BlueString(file)+":"+color.CyanString(fmt.Sprintf("%d ", line))+str)
+		_ = cl.Output(callDepth, colorBrushes[1](levelPrefix[level])+" "+colorBrushes[3](file)+":"+colorBrushes[5](fmt.Sprintf("%d ", line))+str)
 	} else {
 		_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
 	}
