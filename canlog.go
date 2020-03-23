@@ -27,6 +27,10 @@ func SetWriter(rw io.Writer, prefix string) {
 	logger.SetPrefix(formatPrefix(prefix))
 }
 
+func SetLogLevel(level int) {
+	logger.SetLogLevel(level)
+}
+
 // GetLogger returns the log.Logger
 func GetLogger() *log.Logger {
 	return logger.Logger

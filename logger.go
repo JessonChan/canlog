@@ -38,10 +38,9 @@ var currentPath = func() string {
 }()
 var currentPathLen = len(currentPath)
 
-var logLevel = 0
-
 type CanLogger struct {
-	isColor bool
+	isColor  bool
+	logLevel int
 	*log.Logger
 }
 
@@ -67,6 +66,12 @@ var colorBrushes = func() (bs []func(string) string) {
 	return
 }()
 
+func (cl *CanLogger) SetLogLevel(level int) {
+	if level >= LZero && level <= LFatal {
+		cl.logLevel = level
+	}
+}
+
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
 	if cl.isColor {
 		cs := ""
@@ -75,7 +80,7 @@ func (cl *CanLogger) canLine(level int, v ...interface{}) {
 		}
 		v = []interface{}{cs}
 	}
-	if level >= logLevel {
+	if level >= cl.logLevel {
 		cl.CanOutput(3, level, fmt.Sprintln(v...))
 	}
 }
