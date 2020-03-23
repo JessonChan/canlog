@@ -111,7 +111,7 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 		file = short
 	}
 	if cl.isColor {
-		_ = cl.Output(callDepth, colorBrushes[1](levelPrefix[level])+" "+colorBrushes[3](file)+":"+colorBrushes[5](fmt.Sprintf("%d ", line))+str)
+		_ = cl.Output(callDepth, colorBrushes[5](levelPrefix[level])+" "+colorBrushes[4](file)+":"+colorBrushes[3](fmt.Sprintf("%d ", line))+str)
 	} else {
 		_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
 	}
