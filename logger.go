@@ -11,6 +11,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 // These flags define what level message to write
@@ -41,6 +43,7 @@ var currentPathLen = len(currentPath)
 var logLevel = 0
 
 type CanLogger struct {
+	isColor bool
 	*log.Logger
 }
 
@@ -52,10 +55,17 @@ func formatPrefix(p string) string {
 }
 
 func NewCanLogger(rw io.Writer, prefix string) *CanLogger {
-	return &CanLogger{log.New(rw, formatPrefix(prefix), log.LstdFlags)}
+	return &CanLogger{isColor: false, Logger: log.New(rw, formatPrefix(prefix), log.LstdFlags)}
 }
 
+var colorBrush = []func(format string, a ...interface{}) string{color.RedString, color.GreenString, color.YellowString, color.BlueString, color.MagentaString, color.CyanString, color.WhiteString}
+
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
+	if cl.isColor {
+		for i := 0; i < len(v); i++ {
+			v[i] = colorBrush[i%len(colorBrush)](fmt.Sprint(v[i]))
+		}
+	}
 	if level >= logLevel {
 		cl.CanOutput(3, level, fmt.Sprintln(v...))
 	}
@@ -91,7 +101,11 @@ func (cl *CanLogger) CanOutput(callDepth int, level int, str string) {
 		}
 		file = short
 	}
-	_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
+	if cl.isColor {
+		_ = cl.Output(callDepth, color.GreenString(levelPrefix[level])+" "+color.BlueString(file)+":"+color.CyanString(fmt.Sprintf("%d ", line))+str)
+	} else {
+		_ = cl.Output(callDepth, levelPrefix[level]+" "+file+":"+fmt.Sprintf("%d ", line)+str)
+	}
 }
 
 // CanDebug call CanOutput with LDebug
