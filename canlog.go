@@ -22,11 +22,6 @@ func newColorConsole() *CanLogger {
 // SetWriter sets the destination on which log data will be written.
 // The prefix appears at the beginning of each line followed a space.
 func SetWriter(rw io.Writer, prefix string) {
-	if rw == os.Stdout {
-		logger.isColor = true
-	} else {
-		logger.isColor = false
-	}
 	logger.SetOutput(rw)
 	logger.SetPrefix(formatPrefix(prefix))
 }

@@ -62,9 +62,11 @@ var colorBrush = []func(format string, a ...interface{}) string{color.RedString,
 
 func (cl *CanLogger) canLine(level int, v ...interface{}) {
 	if cl.isColor {
+		cs := ""
 		for i := 0; i < len(v); i++ {
-			v[i] = colorBrush[i%len(colorBrush)](fmt.Sprint(v[i]))
+			cs = cs + colorBrush[i%len(colorBrush)](fmt.Sprint(v[i]))
 		}
+		v = []interface{}{cs}
 	}
 	if level >= logLevel {
 		cl.CanOutput(3, level, fmt.Sprintln(v...))
