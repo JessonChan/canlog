@@ -29,6 +29,11 @@ func SetWriter(rw io.Writer, prefix string) {
 	logger.SetPrefix(formatPrefix(prefix))
 }
 
+// SetPrefix sets the output prefix(followed by a space) for the logger.
+func SetPrefix(prefix string) {
+	logger.SetPrefix(formatPrefix(prefix))
+}
+
 func SetLogLevel(level int) {
 	logger.SetLogLevel(level)
 }
