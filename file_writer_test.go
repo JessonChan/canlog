@@ -50,7 +50,7 @@ func Test_Write(t *testing.T) {
 	fw := initFileWriter(new(fileWriter), fileName)
 	l := log.New(fw, "TEST", log.Lshortfile|log.LstdFlags)
 	go func() {
-		for i := 0; ; i++ {
+		for i := 0; i < 10; i++ {
 			l.Println("test", i)
 			time.Sleep(time.Millisecond * time.Duration(rand.Int63n(500)))
 		}
