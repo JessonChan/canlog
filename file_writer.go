@@ -42,7 +42,7 @@ func initFileWriter(fw *fileWriter, fileName string) *fileWriter {
 		openTime = fw.endTime.AddDate(0, 0, 1)
 	}
 	openDate := openTime.Format("2006-01-02")
-	endTime := time.Date(openTime.Year(), openTime.Month(), openTime.Day(), 24, 0, 0, 0, openTime.Location())
+	endTime, _ := time.ParseInLocation("2006-01-02 15:04:05.999999999", openDate+" 23:59:59.999999999", openTime.Location())
 
 	fw.fileName = fileName
 	fw.openDate = openDate
